@@ -59,7 +59,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Fleet Tracking Map (Admin)
         Route::get('/admin/fleet/map', [\App\Domains\Dashboard\Controllers\FleetMapController::class , 'index'])
             ->name('fleet.map')
-            ->middleware('role:admin');    });
+            ->middleware('role:admin');
+
+        // Admin Settings
+        Route::middleware('role:admin')->group(function () {
+            Route::get('/admin/settings', [\App\Domains\Settings\Controllers\SettingController::class , 'index'])->name('admin.settings');
+            Route::post('/admin/settings', [\App\Domains\Settings\Controllers\SettingController::class , 'update'])->name('admin.settings.update');
+        }
+        );    });
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class , 'edit'])->name('profile.edit');

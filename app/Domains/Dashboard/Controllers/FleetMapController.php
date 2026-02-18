@@ -18,7 +18,8 @@ class FleetMapController extends Controller
      */
     public function index()
     {
-        return view('dashboard.fleet.map');
+        $googleMapsKey = \App\Domains\Settings\Models\Setting::get('Maps_API_KEY');
+        return view('dashboard.fleet.map', compact('googleMapsKey'));
     }
 
     /**
