@@ -1,0 +1,5 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/carriroa/carriroad.net
+    - /bin/cp -R public/* $DEPLOYPATH
