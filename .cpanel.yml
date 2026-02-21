@@ -2,4 +2,10 @@
 deployment:
   tasks:
     - export DEPLOYPATH=/home/carriroa/carriroad.net
-    - /bin/cp -R public/* $DEPLOYPATH
+    - export APPPATH=/home/carriroa/laravel_app
+    - /bin/mkdir -p $APPPATH
+    - /bin/cp -R . $APPPATH
+    - /bin/cp -R public/. $DEPLOYPATH
+    - /usr/local/bin/php $APPPATH/artisan config:cache
+    - /usr/local/bin/php $APPPATH/artisan route:cache
+    - /usr/local/bin/php $APPPATH/artisan view:cache
