@@ -4,6 +4,3 @@ deployment:
     - /bin/mkdir -p /home/carriroa/laravel_app
     - /bin/cp -R . /home/carriroa/laravel_app
     - /bin/cp -R public/. /home/carriroa/carriroad.net
-    - /usr/local/bin/php /home/carriroa/laravel_app/artisan config:cache
-    - /usr/local/bin/php /home/carriroa/laravel_app/artisan route:cache
-    - /usr/local/bin/php /home/carriroa/laravel_app/artisan view:cache
