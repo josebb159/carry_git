@@ -1,6 +1,4 @@
 ---
 deployment:
   tasks:
-    - /bin/mkdir -p /home/carriroa/laravel_app
-    - /bin/cp -R . /home/carriroa/laravel_app
-    - /bin/cp -R public/. /home/carriroa/carriroad.net
+    - /bin/echo "deploy ok"
