@@ -8,9 +8,15 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('phone', 30)->nullable()->after('email');
-            $table->decimal('wallet_balance', 12, 2)->default(0)->after('phone');
-            $table->string('fcm_token')->nullable()->after('wallet_balance');
+            if (!Schema::hasColumn('users', 'phone')) {
+                $table->string('phone', 30)->nullable()->after('email');
+            }
+            if (!Schema::hasColumn('users', 'wallet_balance')) {
+                $table->decimal('wallet_balance', 12, 2)->default(0)->after('phone');
+            }
+            if (!Schema::hasColumn('users', 'fcm_token')) {
+                $table->string('fcm_token')->nullable()->after('wallet_balance');
+            }
         });
     }
 
