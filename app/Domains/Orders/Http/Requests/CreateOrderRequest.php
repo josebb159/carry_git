@@ -16,13 +16,20 @@ class CreateOrderRequest extends FormRequest
 
     public function rules(): array
     {
+        $user = auth()->user();
+        $isClient = $user && ($user->hasRole('user') || $user->hasRole('merchant'));
+
         return [
             'client_id' => ['required', 'exists:clients,id'],
             'carrier_id' => ['nullable', 'exists:carriers,id'],
             'order_number' => ['required', 'string', 'max:255', 'unique:orders'],
-            'status' => ['required', Rule::enum(OrderStatus::class)],
-            'payment_status' => ['required', Rule::enum(PaymentStatus::class)],
-            'total_amount' => ['required', 'numeric', 'min:0'],
+            'status' => [$isClient ? 'nullable' : 'required', Rule::enum(OrderStatus::class)],
+            'payment_status' => [$isClient ? 'nullable' : 'required', Rule::enum(PaymentStatus::class)],
+            'total_amount' => [$isClient ? 'nullable' : 'required', 'numeric', 'min:0'],
+            'cargo_type' => ['nullable', 'string', 'max:255'],
+            'temperature' => ['nullable', 'string', 'max:255'],
+            'request_cmr' => ['nullable', 'boolean'],
+            'request_delivery_note' => ['nullable', 'boolean'],
             'notes' => ['nullable', 'string'],
             'locations' => ['required', 'array', 'min:2'], // At least pickup and delivery
             'locations.*.type' => ['required', 'string', 'in:pickup,delivery,stop'],

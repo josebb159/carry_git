@@ -8,14 +8,22 @@ use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function __construct(
-        protected DashboardService $dashboardService
-    ) {
+    public function __construct(protected
+        DashboardService $dashboardService
+        )
+    {
     }
 
     public function index(): View
     {
-        $stats = $this->dashboardService->getStats();
+        $user = auth()->user();
+
+        // Prevent delivery folk from accessing the admin/client dashboard
+        if ($user->hasRole('delivery')) {
+            abort(403, 'Acceso no autorizado al panel web.');
+        }
+
+        $stats = $this->dashboardService->getStats($user);
 
         return view('dashboard.index', compact('stats'));
     }

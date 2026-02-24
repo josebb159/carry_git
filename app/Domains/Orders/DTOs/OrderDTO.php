@@ -13,6 +13,11 @@ readonly class OrderDTO
         public ?int $carrier_id = null,
         public ?\App\Shared\Enums\OrderStatus $status = null,
         public ?\App\Shared\Enums\PaymentStatus $payment_status = null,
+        public ?string $cargo_type = null,
+        public ?string $temperature = null,
+        public bool $request_cmr = false,
+        public bool $request_delivery_note = false,
+        public ?string $notes = null,
     ) {
     }
 
@@ -27,6 +32,11 @@ readonly class OrderDTO
             carrier_id: $request->validated('carrier_id'),
             status: $request->has('status') ? \App\Shared\Enums\OrderStatus::tryFrom($request->validated('status')) : null,
             payment_status: $request->has('payment_status') ? \App\Shared\Enums\PaymentStatus::tryFrom($request->validated('payment_status')) : null,
+            cargo_type: $request->validated('cargo_type'),
+            temperature: $request->validated('temperature'),
+            request_cmr: (bool) $request->validated('request_cmr'),
+            request_delivery_note: (bool) $request->validated('request_delivery_note'),
+            notes: $request->validated('notes'),
         );
     }
 }
