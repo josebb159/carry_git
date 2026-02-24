@@ -11,9 +11,12 @@ class OrderLocation extends Model
         'type',
         'address',
         'city',
+        'state',
+        'zip_code',
         'country',
         'latitude',
         'longitude',
+        'sequence',
         'scheduled_at',
         'completed_at',
     ];

@@ -13,14 +13,22 @@ class Order extends Model
         'fleet_id',
         'user_id',
         'order_number',
+        'cargo_type',
+        'temperature',
+        'request_cmr',
+        'request_delivery_note',
         'status',
         'payment_status',
         'total_amount',
+        'notes',
     ];
 
     protected $casts = [
-        'status' => \App\Shared\Enums\OrderStatus::class,
-        'payment_status' => \App\Shared\Enums\PaymentStatus::class,
+        'status' => \App\Shared\Enums\OrderStatus::class ,
+        'payment_status' => \App\Shared\Enums\PaymentStatus::class ,
+        'request_cmr' => 'boolean',
+        'request_delivery_note' => 'boolean',
+        'temperature' => 'string', // Assuming temperature is stored as a string (e.g., "20°C" or "20.5")
     ];
 
     public function client()
