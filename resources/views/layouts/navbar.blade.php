@@ -19,7 +19,7 @@
                 </span>
                 <input type="text"
                     class="pl-10 pr-4 py-2 border border-gray-700 bg-dark-surface rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-lime-brand focus:border-lime-brand w-64"
-                    placeholder="Search orders, clients...">
+                    placeholder="Buscar órdenes, clientes...">
             </div>
         </div>
     </div>
@@ -65,9 +65,9 @@
                 class="absolute right-0 mt-2 w-80 bg-dark-surface border border-gray-700 rounded-md shadow-lg py-1 z-50"
                 style="display: none;">
                 <div class="px-4 py-2 border-b border-gray-700 flex justify-between items-center bg-gray-900">
-                    <span class="text-sm font-semibold text-white">Notifications</span>
+                    <span class="text-sm font-semibold text-white">Notificaciones</span>
                     <button x-show="unreadCount > 0" @click="markAllRead"
-                        class="text-xs text-lime-brand hover:text-lime-300">Mark all read</button>
+                        class="text-xs text-lime-brand hover:text-lime-300">Marcar todo como leído</button>
                 </div>
                 <div class="max-h-64 overflow-y-auto">
                     <template x-for="notification in notifications" :key="notification.id">
@@ -76,13 +76,11 @@
                             <div class="mt-1 flex justify-between">
                                 <span class="text-xs text-gray-500"
                                     x-text="new Date(notification.created_at).toLocaleString()"></span>
-                                <button @click="markAsRead(notification.id)" class="text-xs text-lime-brand">Mark
-                                    read</button>
+                                <button @click="markAsRead(notification.id)" class="text-xs text-lime-brand">Marcar leído</button>
                             </div>
                         </div>
                     </template>
-                    <div x-show="notifications.length === 0" class="px-4 py-4 text-center text-sm text-gray-500">No new
-                        notifications.</div>
+                    <div x-show="notifications.length === 0" class="px-4 py-4 text-center text-sm text-gray-500">No hay notificaciones nuevas.</div>
                 </div>
             </div>
         </div>
@@ -103,12 +101,11 @@
                 class="absolute right-0 mt-2 w-48 bg-dark-surface border border-gray-700 rounded-md shadow-lg py-1 z-50"
                 style="display: none;">
                 <a href="{{ route('profile.edit') }}"
-                    class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-800">Profile</a>
+                    class="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-800">Ver Perfil</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit"
-                        class="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800">Sign
-                        out</button>
+                        class="block w-full text-left px-4 py-2 text-sm text-gray-200 hover:bg-gray-800">Cerrar Sesión</button>
                 </form>
             </div>
         </div>
