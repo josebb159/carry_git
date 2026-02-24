@@ -1,219 +1,191 @@
 <x-app-layout>
-    <div class="mb-6">
-        <a href="{{ route('orders.index') }}" class="text-lime-brand hover:text-lime-300 font-medium flex items-center">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Back to Orders
-        </a>
+    <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <a href="{{ route('dashboard') }}" class="text-lime-brand hover:text-lime-300 font-medium flex items-center mb-2">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Volver al Panel
+            </a>
+            <h2 class="text-3xl font-bold text-white">Nueva Solicitud de Transporte</h2>
+            <p class="text-gray-400 mt-1">Completa los detalles de tu envío</p>
+        </div>
     </div>
 
-    <div class="bg-[#1E1E1E] rounded-xl shadow-sm border border-gray-800 overflow-hidden">
-        <div class="p-6 border-b border-gray-800">
-            <h2 class="text-xl font-bold text-white">Create New Order</h2>
-            <p class="text-gray-400 text-sm">Enter the order details below</p>
-        </div>
-
-        <form method="POST" action="{{ route('orders.store') }}" class="p-6">
+    <div class="max-w-5xl">
+        <form method="POST" action="{{ route('orders.store') }}" class="space-y-8" x-data="{ cargoType: 'General' }">
             @csrf
 
-            <!-- General Info -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <div>
-                    <x-input-label for="client_id" value="Client" class="text-gray-300" />
-                    <select name="client_id" id="client_id"
-                        class="block mt-1 w-full bg-black border-gray-700 text-white rounded-md shadow-sm focus:border-lime-brand focus:ring-lime-brand">
-                        <option value="">Select Client</option>
-                        @foreach($clients as $client)
-                            <option value="{{ $client->id }}" {{ old('client_id') == $client->id ? 'selected' : '' }}>
-                                {{ $client->legal_name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <x-input-error :messages="$errors->get('client_id')" class="mt-2" />
-                </div>
+            {{-- Generación automática de número de orden --}}
+            <input type="hidden" name="order_number" value="REQ-{{ strtoupper(Str::random(8)) }}">
 
-                <div>
-                    <x-input-label for="carrier_id" value="Carrier" class="text-gray-300" />
-                    <select name="carrier_id" id="carrier_id"
-                        class="block mt-1 w-full bg-black border-gray-700 text-white rounded-md shadow-sm focus:border-lime-brand focus:ring-lime-brand">
-                        <option value="">Select Carrier (Optional)</option>
-                        @foreach($carriers as $carrier)
-                            <option value="{{ $carrier->id }}" {{ old('carrier_id') == $carrier->id ? 'selected' : '' }}>
-                                {{ $carrier->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <x-input-error :messages="$errors->get('carrier_id')" class="mt-2" />
-                </div>
-
-                <div>
-                    <x-input-label for="order_number" value="Order Number" class="text-gray-300" />
-                    <x-text-input id="order_number"
-                        class="block mt-1 w-full bg-black border-gray-700 text-white focus:border-lime-brand focus:ring-lime-brand"
-                        type="text" name="order_number" :value="old('order_number', 'ORD-' . strtoupper(uniqid()))"
-                        required />
-                    <x-input-error :messages="$errors->get('order_number')" class="mt-2" />
-                </div>
-
-                <div>
-                    <x-input-label for="status" value="Status" class="text-gray-300" />
-                    <select name="status" id="status"
-                        class="block mt-1 w-full bg-black border-gray-700 text-white rounded-md shadow-sm focus:border-lime-brand focus:ring-lime-brand">
-                        @foreach(\App\Shared\Enums\OrderStatus::cases() as $status)
-                            <option value="{{ $status->value }}" {{ old('status') == $status->value ? 'selected' : '' }}>
-                                {{ ucfirst($status->value) }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <x-input-error :messages="$errors->get('status')" class="mt-2" />
-                </div>
-
-                <div>
-                    <x-input-label for="payment_status" value="Payment Status" class="text-gray-300" />
-                    <select name="payment_status" id="payment_status"
-                        class="block mt-1 w-full bg-black border-gray-700 text-white rounded-md shadow-sm focus:border-lime-brand focus:ring-lime-brand">
-                        @foreach(\App\Shared\Enums\PaymentStatus::cases() as $status)
-                            <option value="{{ $status->value }}" {{ old('payment_status') == $status->value ? 'selected' : '' }}>{{ ucfirst($status->value) }}</option>
-                        @endforeach
-                    </select>
-                    <x-input-error :messages="$errors->get('payment_status')" class="mt-2" />
-                </div>
-
-                <div>
-                    <x-input-label for="total_amount" value="Total Amount" class="text-gray-300" />
-                    <div class="relative mt-1 rounded-md shadow-sm">
-                        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                            <span class="text-gray-500 sm:text-sm">$</span>
+            {{-- Sección: Datos del Cliente (Auto-rellenados si es cliente) --}}
+            <div class="bg-[#1E1E1E]/50 backdrop-blur-xl rounded-3xl border border-gray-800 p-8">
+                <h3 class="text-xl font-bold text-white mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-lime-brand/10 text-lime-brand rounded-full flex items-center justify-center mr-3 text-sm">01</span>
+                    Datos de Facturación y Contacto
+                </h3>
+                
+                @if($isClient && $myClient)
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <input type="hidden" name="client_id" value="{{ $myClient->id }}">
+                        
+                        <div class="space-y-1">
+                            <label class="text-sm font-medium text-gray-400">Razón Social</label>
+                            <div class="text-white font-semibold py-2 px-1 border-b border-gray-800">{{ $myClient->legal_name }}</div>
                         </div>
-                        <x-text-input id="total_amount"
-                            class="block w-full pl-7 bg-black border-gray-700 text-white focus:border-lime-brand focus:ring-lime-brand"
-                            type="number" step="0.01" name="total_amount" :value="old('total_amount')" required
-                            placeholder="0.00" />
+                        
+                        <div class="space-y-1">
+                            <label class="text-sm font-medium text-gray-400">NIF / CIF</label>
+                            <div class="text-white font-semibold py-2 px-1 border-b border-gray-800">{{ $myClient->vat_number }}</div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-sm font-medium text-gray-400">Contacto Logístico</label>
+                            <div class="text-white font-semibold py-2 px-1 border-b border-gray-800">{{ $myClient->logistics_contact_name ?? 'No definido' }}</div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-sm font-medium text-gray-400">Email de Gestión</label>
+                            <div class="text-white font-semibold py-2 px-1 border-b border-gray-800">{{ $myClient->logistics_contact_email ?? auth()->user()->email }}</div>
+                        </div>
                     </div>
-                    <x-input-error :messages="$errors->get('total_amount')" class="mt-2" />
-                </div>
+                @else
+                    {{-- Vista para Admin o usuarios sin perfil de cliente creado --}}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <x-input-label for="client_id" value="Seleccionar Cliente" class="text-gray-400 mb-2" />
+                            <select name="client_id" id="client_id" class="w-full bg-black border-gray-800 text-white rounded-xl focus:border-lime-brand focus:ring-lime-brand">
+                                <option value="">Seleccione un cliente...</option>
+                                @foreach($clients as $c)
+                                    <option value="{{ $c->id }}" {{ old('client_id') == $c->id ? 'selected' : '' }}>{{ $c->legal_name }}</option>
+                                @endforeach
+                            </select>
+                            <x-input-error :messages="$errors->get('client_id')" class="mt-2" />
+                        </div>
+                    </div>
+                @endif
             </div>
 
-            <!-- Locations Mockup -->
-            <div class="border-t border-gray-800 pt-6 mt-6">
-                <h3 class="text-lg font-medium text-white mb-4">Locations</h3>
+            {{-- Sección: Detalles de la Carga --}}
+            <div class="bg-[#1E1E1E]/50 backdrop-blur-xl rounded-3xl border border-gray-800 p-8">
+                <h3 class="text-xl font-bold text-white mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-lime-brand/10 text-lime-brand rounded-full flex items-center justify-center mr-3 text-sm">02</span>
+                    Logística y Mercancía
+                </h3>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Pickup -->
-                    <div class="bg-black p-4 rounded-lg border border-gray-800">
-                        <h4 class="font-bold text-gray-300 mb-3">Pickup Location</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    {{-- Columna: Origen --}}
+                    <div class="space-y-6">
+                        <h4 class="text-lime-brand font-bold uppercase tracking-wider text-xs">Punto de Recogida (Origen)</h4>
                         <input type="hidden" name="locations[0][type]" value="pickup">
                         <input type="hidden" name="locations[0][sequence]" value="1">
-
-                        <div class="space-y-3">
+                        
+                        <div class="space-y-4">
                             <div>
-                                <x-input-label value="Address" class="text-gray-400" />
-                                <x-text-input name="locations[0][address]"
-                                    class="w-full text-sm bg-[#1E1E1E] border-gray-700 text-white focus:border-lime-brand focus:ring-lime-brand"
-                                    :value="old('locations.0.address')" required />
+                                <x-text-input name="locations[0][address]" placeholder="Dirección completa" class="w-full bg-black/50 border-gray-800 text-white rounded-xl" :value="old('locations.0.address')" required />
                             </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <x-input-label value="City" class="text-gray-400" />
-                                    <x-text-input name="locations[0][city]"
-                                        class="w-full text-sm bg-[#1E1E1E] border-gray-700 text-white focus:border-lime-brand focus:ring-lime-brand"
-                                        :value="old('locations.0.city')" required />
-                                </div>
-                                <div>
-                                    <x-input-label value="State" class="text-gray-400" />
-                                    <x-text-input name="locations[0][state]"
-                                        class="w-full text-sm bg-[#1E1E1E] border-gray-700 text-white focus:border-lime-brand focus:ring-lime-brand"
-                                        :value="old('locations.0.state')" required />
-                                </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <x-text-input name="locations[0][city]" placeholder="Ciudad" class="bg-black/50 border-gray-800 text-white rounded-xl" :value="old('locations.0.city')" required />
+                                <x-text-input name="locations[0][zip_code]" placeholder="Código Postal" class="bg-black/50 border-gray-800 text-white rounded-xl" :value="old('locations.0.zip_code')" required />
                             </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <x-input-label value="Zip Code" class="text-gray-400" />
-                                    <x-text-input name="locations[0][zip_code]"
-                                        class="w-full text-sm bg-[#1E1E1E] border-gray-700 text-white focus:border-lime-brand focus:ring-lime-brand"
-                                        :value="old('locations.0.zip_code')" required />
-                                </div>
-                                <div>
-                                    <x-input-label value="Country" class="text-gray-400" />
-                                    <x-text-input name="locations[0][country]"
-                                        class="w-full text-sm bg-[#1E1E1E] border-gray-700 text-white focus:border-lime-brand focus:ring-lime-brand"
-                                        :value="old('locations.0.country', 'US')" />
-                                </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <x-text-input name="locations[0][state]" placeholder="Provincia / Estado" class="bg-black/50 border-gray-800 text-white rounded-xl" :value="old('locations.0.state')" required />
+                                <x-text-input name="locations[0][country]" placeholder="País" class="bg-black/50 border-gray-800 text-white rounded-xl" :value="old('locations.0.country', 'España')" required />
                             </div>
                             <div>
-                                <x-input-label value="Scheduled At" class="text-gray-400" />
-                                <x-text-input type="datetime-local" name="locations[0][scheduled_at]"
-                                    class="w-full text-sm bg-[#1E1E1E] border-gray-700 text-white focus:border-lime-brand focus:ring-lime-brand"
-                                    :value="old('locations.0.scheduled_at')" />
+                                <label class="text-xs text-gray-500 mb-1 block">Fecha/Hora estimada de recogida</label>
+                                <x-text-input type="datetime-local" name="locations[0][scheduled_at]" class="w-full bg-black/50 border-gray-800 text-white rounded-xl" :value="old('locations.0.scheduled_at')" />
                             </div>
                         </div>
                     </div>
 
-                    <!-- Delivery -->
-                    <div class="bg-black p-4 rounded-lg border border-gray-800">
-                        <h4 class="font-bold text-gray-300 mb-3">Delivery Location</h4>
+                    {{-- Columna: Destino --}}
+                    <div class="space-y-6">
+                        <h4 class="text-blue-400 font-bold uppercase tracking-wider text-xs">Punto de Entrega (Destino)</h4>
                         <input type="hidden" name="locations[1][type]" value="delivery">
                         <input type="hidden" name="locations[1][sequence]" value="2">
-
-                        <div class="space-y-3">
+                        
+                        <div class="space-y-4">
                             <div>
-                                <x-input-label value="Address" class="text-gray-400" />
-                                <x-text-input name="locations[1][address]"
-                                    class="w-full text-sm bg-[#1E1E1E] border-gray-700 text-white focus:border-lime-brand focus:ring-lime-brand"
-                                    :value="old('locations.1.address')" required />
+                                <x-text-input name="locations[1][address]" placeholder="Dirección completa" class="w-full bg-black/50 border-gray-800 text-white rounded-xl" :value="old('locations.1.address')" required />
                             </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <x-input-label value="City" class="text-gray-400" />
-                                    <x-text-input name="locations[1][city]"
-                                        class="w-full text-sm bg-[#1E1E1E] border-gray-700 text-white focus:border-lime-brand focus:ring-lime-brand"
-                                        :value="old('locations.1.city')" required />
-                                </div>
-                                <div>
-                                    <x-input-label value="State" class="text-gray-400" />
-                                    <x-text-input name="locations[1][state]"
-                                        class="w-full text-sm bg-[#1E1E1E] border-gray-700 text-white focus:border-lime-brand focus:ring-lime-brand"
-                                        :value="old('locations.1.state')" required />
-                                </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <x-text-input name="locations[1][city]" placeholder="Ciudad" class="bg-black/50 border-gray-800 text-white rounded-xl" :value="old('locations.1.city')" required />
+                                <x-text-input name="locations[1][zip_code]" placeholder="Código Postal" class="bg-black/50 border-gray-800 text-white rounded-xl" :value="old('locations.1.zip_code')" required />
                             </div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <div>
-                                    <x-input-label value="Zip Code" class="text-gray-400" />
-                                    <x-text-input name="locations[1][zip_code]"
-                                        class="w-full text-sm bg-[#1E1E1E] border-gray-700 text-white focus:border-lime-brand focus:ring-lime-brand"
-                                        :value="old('locations.1.zip_code')" required />
-                                </div>
-                                <div>
-                                    <x-input-label value="Country" class="text-gray-400" />
-                                    <x-text-input name="locations[1][country]"
-                                        class="w-full text-sm bg-[#1E1E1E] border-gray-700 text-white focus:border-lime-brand focus:ring-lime-brand"
-                                        :value="old('locations.1.country', 'US')" />
-                                </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <x-text-input name="locations[1][state]" placeholder="Provincia / Estado" class="bg-black/50 border-gray-800 text-white rounded-xl" :value="old('locations.1.state')" required />
+                                <x-text-input name="locations[1][country]" placeholder="País" class="bg-black/50 border-gray-800 text-white rounded-xl" :value="old('locations.1.country', 'España')" required />
                             </div>
                             <div>
-                                <x-input-label value="Scheduled At" class="text-gray-400" />
-                                <x-text-input type="datetime-local" name="locations[1][scheduled_at]"
-                                    class="w-full text-sm bg-[#1E1E1E] border-gray-700 text-white focus:border-lime-brand focus:ring-lime-brand"
-                                    :value="old('locations.1.scheduled_at')" />
+                                <label class="text-xs text-gray-500 mb-1 block">Fecha/Hora preferente de entrega</label>
+                                <x-text-input type="datetime-local" name="locations[1][scheduled_at]" class="w-full bg-black/50 border-gray-800 text-white rounded-xl" :value="old('locations.1.scheduled_at')" />
                             </div>
                         </div>
                     </div>
                 </div>
+
+                {{-- Detalles Extra --}}
+                <div class="mt-12 pt-8 border-t border-gray-800 grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <x-input-label for="cargo_type" value="Tipo de Mercancía" class="text-gray-400 mb-2" />
+                        <select name="cargo_type" id="cargo_type" x-model="cargoType" class="w-full bg-black border-gray-800 text-white rounded-xl focus:border-lime-brand focus:ring-lime-brand">
+                            <option value="General">Carga General</option>
+                            <option value="Refrigerada">Temperatura Controlada</option>
+                            <option value="Peligrosa (ADR)">ADR / Peligrosa</option>
+                            <option value="Granel">Granel</option>
+                        </select>
+                    </div>
+
+                    {{-- Campo extra para temperatura controlada --}}
+                    <div x-show="cargoType === 'Refrigerada'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 transform -translate-y-2" x-transition:enter-end="opacity-100 transform translate-y-0" class="col-span-1">
+                        <x-input-label for="temperature" value="Temperatura Requerida (ºC)" class="text-lime-brand mb-2" />
+                        <x-text-input name="temperature" id="temperature" placeholder="Ej: +4ºC / -18ºC" class="w-full bg-black border-lime-brand/30 text-white rounded-xl focus:border-lime-brand focus:ring-lime-brand" :value="old('temperature')" />
+                    </div>
+
+                    <div :class="cargoType === 'Refrigerada' ? 'md:col-span-2' : ''">
+                        <x-input-label for="notes" value="Observaciones / Instrucciones Especiales" class="text-gray-400 mb-2" />
+                        <textarea name="notes" rows="1" class="w-full bg-black border-gray-800 text-white rounded-xl focus:border-lime-brand focus:ring-lime-brand" placeholder="Ej: Contactar 1h antes de llegar...">{{ old('notes') }}</textarea>
+                    </div>
+                </div>
             </div>
 
-            <div class="mt-6">
-                <x-input-label for="notes" value="Notes" class="text-gray-300" />
-                <textarea name="notes" id="notes" rows="3"
-                    class="block mt-1 w-full bg-black border-gray-700 text-white rounded-md shadow-sm focus:border-lime-brand focus:ring-lime-brand">{{ old('notes') }}</textarea>
+            {{-- Sección: Gestión Documental --}}
+            <div class="bg-[#1E1E1E]/50 backdrop-blur-xl rounded-3xl border border-gray-800 p-8">
+                <h3 class="text-xl font-bold text-white mb-6 flex items-center">
+                    <span class="w-8 h-8 bg-lime-brand/10 text-lime-brand rounded-full flex items-center justify-center mr-3 text-sm">03</span>
+                    Gestión Documental Requerida
+                </h3>
+                
+                <div class="flex flex-wrap gap-8">
+                    <label class="inline-flex items-center group cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" name="request_cmr" value="1" class="sr-only peer" checked>
+                            <div class="w-12 h-6 bg-gray-700 rounded-full transition peer-checked:bg-lime-brand"></div>
+                            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition scroll-smooth peer-checked:translate-x-6"></div>
+                        </div>
+                        <span class="ml-3 text-gray-400 group-hover:text-white transition">Solicitar CMR Digital</span>
+                    </label>
+
+                    <label class="inline-flex items-center group cursor-pointer">
+                        <div class="relative">
+                            <input type="checkbox" name="request_delivery_note" value="1" class="sr-only peer" checked>
+                            <div class="w-12 h-6 bg-gray-700 rounded-full transition peer-checked:bg-blue-500"></div>
+                            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition scroll-smooth peer-checked:translate-x-6"></div>
+                        </div>
+                        <span class="ml-3 text-gray-400 group-hover:text-white transition">Solicitar Albarán Digital</span>
+                    </label>
+                </div>
             </div>
 
-            <div class="mt-8 flex justify-end gap-3">
-                <a href="{{ route('orders.index') }}"
-                    class="px-4 py-2 border border-gray-700 rounded-md text-gray-400 hover:bg-gray-800 font-medium">Cancel</a>
-                <button type="submit"
-                    class="px-4 py-2 bg-lime-brand hover:bg-lime-400 text-black rounded-md font-bold transition-colors">Create
-                    Order</button>
+            {{-- Botones de Acción --}}
+            <div class="flex items-center justify-end gap-6 pt-4">
+                <a href="{{ route('dashboard') }}" class="text-gray-500 hover:text-white font-medium transition">Cancelar</a>
+                
+                <button type="submit" class="px-10 py-4 bg-lime-brand hover:bg-lime-400 text-black font-extrabold rounded-full transition-all duration-300 shadow-[0_0_30px_rgba(207,247,0,0.2)] hover:scale-105 active:scale-95">
+                    Confirmar Envío
+                </button>
             </div>
         </form>
     </div>
