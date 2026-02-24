@@ -26,6 +26,7 @@
             Órdenes
         </a>
 
+        @role('admin')
         <a href="{{ route('clients.index') }}"
             class="flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors duration-200 {{ request()->routeIs('clients.*') ? 'bg-lime-brand text-black' : 'text-gray-400 hover:bg-gray-900 hover:text-white' }}">
             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -35,6 +36,7 @@
             </svg>
             Clientes
         </a>
+        @endrole
 
         @hasanyrole('admin|agent')
         <a href="{{ route('carriers.index') }}"

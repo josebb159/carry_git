@@ -31,6 +31,8 @@ class CreateOrderRequest extends FormRequest
             'request_cmr' => ['nullable', 'boolean'],
             'request_delivery_note' => ['nullable', 'boolean'],
             'notes' => ['nullable', 'string'],
+            'logistics_contact_name' => ['nullable', 'string', 'max:255'],
+            'logistics_contact_email' => ['nullable', 'email', 'max:255'],
             'locations' => ['required', 'array', 'min:2'], // At least pickup and delivery
             'locations.*.type' => ['required', 'string', 'in:pickup,delivery,stop'],
             'locations.*.address' => ['required', 'string'],

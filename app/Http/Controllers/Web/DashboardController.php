@@ -25,6 +25,9 @@ class DashboardController extends Controller
 
         $stats = $this->dashboardService->getStats($user);
 
+        // Debug temporal para producción
+        // dd($stats);
+
         return view('dashboard.index', compact('stats'));
     }
 }

@@ -18,6 +18,8 @@ readonly class OrderDTO
         public bool $request_cmr = false,
         public bool $request_delivery_note = false,
         public ?string $notes = null,
+        public ?string $logistics_contact_name = null,
+        public ?string $logistics_contact_email = null,
     ) {
     }
 
@@ -37,6 +39,8 @@ readonly class OrderDTO
             request_cmr: (bool) $request->validated('request_cmr'),
             request_delivery_note: (bool) $request->validated('request_delivery_note'),
             notes: $request->validated('notes'),
+            logistics_contact_name: $request->validated('logistics_contact_name'),
+            logistics_contact_email: $request->validated('logistics_contact_email'),
         );
     }
 }

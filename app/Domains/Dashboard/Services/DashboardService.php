@@ -8,51 +8,99 @@ use App\Domains\Events\Models\Event;
 use App\Shared\Enums\OrderStatus;
 use App\Shared\Enums\InvoiceStatus;
 use Illuminate\Support\Facades\DB;
+use App\Domains\Users\Models\User;
 
 class DashboardService
 {
-    public function getStats(): array
+    public function getStats(?User $user = null): array
     {
-        // 1. Order Counts by Status
-        $orderStats = Order::toBase()
+        $isClient = false;
+        $clientProfile = null;
+
+        if ($user) {
+            $isClient = $user->hasRole('merchant') || $user->hasRole('user');
+            if ($isClient) {
+                $clientProfile = \App\Domains\Clients\Models\Client::where('user_id', $user->id)->first();
+            }
+        }
+
+        // 1. Order Counts by Status - Fixed Illegal offset type using toBase()
+        $query = Order::query();
+        if ($isClient && $user) {
+            $query->where('user_id', $user->id);
+        }
+
+        $orderStats = $query->toBase()
             ->select('status', DB::raw('count(*) as count'))
             ->groupBy('status')
             ->get()
             ->pluck('count', 'status');
 
-        // Fill missing statuses with 0
         $allStatuses = OrderStatus::cases();
         $formattedOrderStats = [];
         foreach ($allStatuses as $status) {
-            $formattedOrderStats[$status->value] = $orderStats[$status->value] ?? 0;
+            $formattedOrderStats[$status->value] = (int) ($orderStats[$status->value] ?? 0);
         }
 
-        // 2. Revenue (Total of Paid Invoices)
-        $revenue = Invoice::where('status', InvoiceStatus::PAID)->sum('total');
+        // 2. Revenue
+        $revenueQuery = Invoice::where('status', InvoiceStatus::PAID);
+        if ($isClient && $user) {
+            $revenueQuery->whereHas('order', fn($q) => $q->where('user_id', $user->id));
+        }
+        $revenue = $revenueQuery->sum('total');
 
-        // 3. Pending Revenue (Sent but not paid)
-        $pendingRevenue = Invoice::where('status', InvoiceStatus::SENT)->sum('total');
+        // 3. Pending Revenue
+        $pendingRevenueQuery = Invoice::where('status', InvoiceStatus::SENT);
+        if ($isClient && $user) {
+            $pendingRevenueQuery->whereHas('order', fn($q) => $q->where('user_id', $user->id));
+        }
+        $pendingRevenue = $pendingRevenueQuery->sum('total');
 
         // 4. Recent Events
-        $recentEvents = Event::with(['order', 'user'])
-            ->latest()
-            ->latest()
-            ->limit(10)
-            ->get();
+        $eventsQuery = Event::with(['order', 'user']);
+        if ($isClient && $user) {
+            $eventsQuery->whereHas('order', fn($q) => $q->where('user_id', $user->id));
+        }
+        $recentEvents = $eventsQuery->latest()->limit(10)->get();
 
         // 5. Recent Orders
-        $recentOrders = Order::with(['client', 'carrier'])
-            ->latest()
-            ->limit(5)
-            ->get();
+        $ordersQuery = Order::with(['client', 'carrier']);
+        if ($isClient && $user) {
+            $ordersQuery->where('user_id', $user->id);
+        }
+        $recentOrders = $ordersQuery->latest()->limit(5)->get();
 
-        // 6. Top Clients (by order volume)
-        $topClients = \App\Domains\Clients\Models\Client::withCount('orders')
+        // 6. Top Clients - Only for non-clients (Admins)
+        $topClients = $isClient ? collect() : \App\Domains\Clients\Models\Client::withCount('orders')
             ->orderByDesc('orders_count')
             ->limit(5)
             ->get();
 
+        // 7. TRACKING DATA - Formatted to Array for frontend
+        $trackingPoints = collect();
+        
+        $trackingOrdersQuery = Order::where('status', OrderStatus::IN_TRANSIT);
+        if ($isClient && $user) {
+            $trackingOrdersQuery->where('user_id', $user->id);
+        }
+        $inTransitOrders = $trackingOrdersQuery->get();
+
+        foreach ($inTransitOrders as $incOrder) {
+            $latestPoint = \App\Domains\Fleet\Models\Tracking::where('order_uuid', $incOrder->uuid)
+                ->latest('id')
+                ->first();
+            
+            if ($latestPoint) {
+                // Ensure relationship is loaded for the view
+                $latestPoint->setRelation('order', $incOrder->load('client', 'carrier', 'locations'));
+                $trackingPoints->push($latestPoint);
+            }
+        }
+
         return [
+            'is_client' => $isClient,
+            'client_profile' => $clientProfile,
+            'in_transit_tracking' => $trackingPoints->toArray(),
             'orders' => $formattedOrderStats,
             'revenue' => [
                 'total_collected' => (float) $revenue,

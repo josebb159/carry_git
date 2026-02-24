@@ -12,6 +12,8 @@ class Order extends Model
         'carrier_id',
         'fleet_id',
         'user_id',
+        'logistics_contact_name',
+        'logistics_contact_email',
         'order_number',
         'cargo_type',
         'temperature',

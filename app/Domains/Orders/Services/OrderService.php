@@ -26,6 +26,8 @@ class OrderService
                 'status' => $dto->status ?? \App\Shared\Enums\OrderStatus::PENDING,
                 'payment_status' => $dto->payment_status ?? \App\Shared\Enums\PaymentStatus::PENDING,
                 'notes' => $dto->notes,
+                'logistics_contact_name' => $dto->logistics_contact_name,
+                'logistics_contact_email' => $dto->logistics_contact_email,
             ]);
 
             foreach ($dto->locations as $locationData) {
