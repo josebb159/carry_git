@@ -1,6 +1,5 @@
 <x-app-layout>
 @if($stats['is_client'] ?? false)
-    <!-- VISTA DASHBOARD: CLIENTE -->
     <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
             <h2 class="text-3xl font-bold text-white">Hola, {{ auth()->user()->name }}</h2>
@@ -26,14 +25,13 @@
                 </svg>
             </div>
             <div>
-                <span class="text-gray-400 text-sm">Plazo de Pago Asignado:</span>
-                <span class="text-white font-bold ml-2">{{ $stats['client_profile']->payment_terms_days }} días</span>
+                <span class="text-gray-400 text-sm">Soporte 24/7:</span>
+                <span class="text-white font-bold ml-2">{{ $stats['client_profile']->payment_terms_days }} días al mes</span>
             </div>
         </div>
     </div>
     @endif
 @else
-    <!-- VISTA DASHBOARD: ADMINISTRADOR -->
     <div class="mb-8 flex justify-between items-center text-white">
         <div>
             <h2 class="text-3xl font-bold">Panel Administrativo</h2>
@@ -51,42 +49,45 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-[#1E1E1E] rounded-2xl border border-gray-800 p-6 flex flex-col justify-between h-32 hover:border-yellow-500/50 transition-all cursor-default">
+        <div class="bg-[#1E1E1E] rounded-2xl border border-gray-800 p-6 flex flex-col justify-between h-32 hover:border-yellow-500/50 transition-all duration-300 group cursor-default">
             <div class="flex justify-between items-start">
-                <div class="text-xs font-black text-gray-500 uppercase tracking-widest">Órdenes Pendientes</div>
-                <div class="p-2 bg-yellow-500/10 rounded-lg text-yellow-500">
+                <div class="text-xs font-black text-gray-500 uppercase tracking-widest group-hover:text-yellow-500 transition-colors">Órdenes Pendientes</div>
+                <div class="p-2 bg-yellow-500/10 rounded-lg text-yellow-500 shadow-[0_0_15px_rgba(234,179,8,0.1)]">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
             </div>
-            <div class="text-3xl font-black text-white">{{ $stats['orders']['PENDING'] ?? $stats['orders']['pending'] ?? 0 }}</div>
+            <div class="text-3xl font-black text-white group-hover:scale-105 transition-transform origin-left">{{ $stats['orders']['PENDING'] ?? $stats['orders']['pending'] ?? 0 }}</div>
         </div>
-        <div class="bg-[#1E1E1E] rounded-2xl border border-gray-800 p-6 flex flex-col justify-between h-32 hover:border-blue-500/50 transition-all cursor-default">
+
+        <div class="bg-[#1E1E1E] rounded-2xl border border-gray-800 p-6 flex flex-col justify-between h-32 hover:border-blue-500/50 transition-all duration-300 group cursor-default">
             <div class="flex justify-between items-start">
-                <div class="text-xs font-black text-gray-500 uppercase tracking-widest">En Tránsito</div>
-                <div class="p-2 bg-blue-500/10 rounded-lg text-blue-500">
+                <div class="text-xs font-black text-gray-500 uppercase tracking-widest group-hover:text-blue-500 transition-colors">En Tránsito</div>
+                <div class="p-2 bg-blue-500/10 rounded-lg text-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                     </svg>
                 </div>
             </div>
-            <div class="text-3xl font-black text-white">{{ $stats['orders']['IN_TRANSIT'] ?? $stats['orders']['in_transit'] ?? 0 }}</div>
+            <div class="text-3xl font-black text-white group-hover:scale-105 transition-transform origin-left">{{ $stats['orders']['IN_TRANSIT'] ?? $stats['orders']['in_transit'] ?? 0 }}</div>
         </div>
-        <div class="bg-[#1E1E1E] rounded-2xl border border-gray-800 p-6 flex flex-col justify-between h-32 hover:border-lime-brand/50 transition-all cursor-default">
+
+        <div class="bg-[#1E1E1E] rounded-2xl border border-gray-800 p-6 flex flex-col justify-between h-32 hover:border-lime-brand/50 transition-all duration-300 group cursor-default">
             <div class="flex justify-between items-start">
-                <div class="text-xs font-black text-gray-500 uppercase tracking-widest">Entregadas</div>
-                <div class="p-2 bg-lime-brand/10 rounded-lg text-lime-brand">
+                <div class="text-xs font-black text-gray-500 uppercase tracking-widest group-hover:text-lime-brand transition-colors">Entregadas</div>
+                <div class="p-2 bg-lime-brand/10 rounded-lg text-lime-brand shadow-[0_0_15px_rgba(207,247,0,0.1)]">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
                 </div>
             </div>
-            <div class="text-3xl font-black text-white">{{ $stats['orders']['DELIVERED'] ?? $stats['orders']['delivered'] ?? 0 }}</div>
+            <div class="text-3xl font-black text-white group-hover:scale-105 transition-transform origin-left">{{ $stats['orders']['DELIVERED'] ?? $stats['orders']['delivered'] ?? 0 }}</div>
         </div>
-        <div class="bg-[#1E1E1E] rounded-2xl border border-gray-800 p-6 flex flex-col justify-between h-32 hover:border-white/20 transition-all cursor-default text-white">
+
+        <div class="bg-[#1E1E1E] rounded-2xl border border-gray-800 p-6 flex flex-col justify-between h-32 hover:border-white/20 transition-all duration-300 group cursor-default text-white">
             <div class="flex justify-between items-start">
-                <div class="text-xs font-black text-gray-500 uppercase tracking-widest">Facturación</div>
+                <div class="text-xs font-black text-gray-500 uppercase tracking-widest group-hover:text-white transition-colors">Facturación</div>
                 <div class="p-2 bg-white/5 rounded-lg text-white">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -98,7 +99,6 @@
     </div>
 @endif
 
-    <!-- GOOGLE MAPS LIVE TRACKING -->
     <div class="mb-8">
         <div class="bg-[#1E1E1E] rounded-3xl border border-gray-800 overflow-hidden shadow-2xl relative">
             <div class="p-6 border-b border-gray-800 flex justify-between items-center bg-black/40">
@@ -153,7 +153,6 @@
         </div>
     </div>
 
-    <!-- TABLA DE ÓRDENES RECIENTES -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 space-y-8">
             <div class="bg-[#1E1E1E] rounded-3xl shadow-sm border border-gray-800 overflow-hidden">
@@ -247,7 +246,6 @@
         </div>
     </div>
 
-    <!-- GOOGLE MAPS COMPONENTS -->
     @if(!empty($stats['in_transit_tracking']))
     <script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_api_key') }}&callback=initMap" async defer></script>
     <script>
@@ -259,51 +257,15 @@
             { "elementType": "geometry", "stylers": [{ "color": "#242f3e" }] },
             { "elementType": "labels.text.stroke", "stylers": [{ "color": "#242f3e" }] },
             { "elementType": "labels.text.fill", "stylers": [{ "color": "#746855" }] },
-            {
-                "featureType": "administrative.locality",
-                "elementType": "labels.text.fill",
-                "stylers": [{ "color": "#d59563" }]
-            },
-            {
-                "featureType": "poi",
-                "elementType": "labels.text.fill",
-                "stylers": [{ "color": "#d59563" }]
-            },
-            {
-                "featureType": "road",
-                "elementType": "geometry",
-                "stylers": [{ "color": "#38414e" }]
-            },
-            {
-                "featureType": "road",
-                "elementType": "geometry.stroke",
-                "stylers": [{ "color": "#212a37" }]
-            },
-            {
-                "featureType": "road",
-                "elementType": "labels.text.fill",
-                "stylers": [{ "color": "#9ca5b9" }]
-            },
-            {
-                "featureType": "road.highway",
-                "elementType": "geometry",
-                "stylers": [{ "color": "#746855" }]
-            },
-            {
-                "featureType": "road.highway",
-                "elementType": "geometry.stroke",
-                "stylers": [{ "color": "#1f2835" }]
-            },
-            {
-                "featureType": "road.highway",
-                "elementType": "labels.text.fill",
-                "stylers": [{ "color": "#f3d19c" }]
-            },
-            {
-                "featureType": "water",
-                "elementType": "geometry",
-                "stylers": [{ "color": "#17263c" }]
-            }
+            { "featureType": "administrative.locality", "elementType": "labels.text.fill", "stylers": [{ "color": "#d59563" }] },
+            { "featureType": "poi", "elementType": "labels.text.fill", "stylers": [{ "color": "#d59563" }] },
+            { "featureType": "road", "elementType": "geometry", "stylers": [{ "color": "#38414e" }] },
+            { "featureType": "road", "elementType": "geometry.stroke", "stylers": [{ "color": "#212a37" }] },
+            { "featureType": "road", "elementType": "labels.text.fill", "stylers": [{ "color": "#9ca5b9" }] },
+            { "featureType": "road.highway", "elementType": "geometry", "stylers": [{ "color": "#746855" }] },
+            { "featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{ "color": "#1f2835" }] },
+            { "featureType": "road.highway", "elementType": "labels.text.fill", "stylers": [{ "color": "#f3d19c" }] },
+            { "featureType": "water", "elementType": "geometry", "stylers": [{ "color": "#17263c" }] }
         ];
 
         function initMap() {
@@ -325,7 +287,6 @@
                 const isRefrigerated = point.order.cargo_type === 'Refrigerada';
                 const color = isRefrigerated ? '#00A3FF' : '#CCFF00';
                 
-                // Custom Truck Icon SVG
                 const truckIcon = {
                     path: 'M20,8H17V4H3C1.9,4,1,4.9,1,6v10h2c0,1.66,1.34,3,3,3s3-1.34,3-3h6c0,1.66,1.34,3,3,3s3-1.34,3-3h2v-5L20,8z M6,17.2c-0.66,0-1.2-0.54-1.2-1.2c0-0.66,0.54-1.2,1.2-1.2s1.2,0.54,1.2,1.2C7.2,16.66,6.66,17.2,6,17.2z M17,17.2c-0.66,0-1.2-0.54-1.2-1.2c0-0.66,0.54-1.2,1.2-1.2s1.2,0.54,1.2,1.2C18.2,16.66,17.66,17.2,17,17.2z M17,12V9h2.2l1.8,3H17z',
                     fillColor: color,
