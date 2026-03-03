@@ -15,7 +15,8 @@ if (!isset($_GET['secret']) || $_GET['secret'] !== $SECRET) {
     die('Acceso denegado.');
 }
 
-$laravelRoot = dirname(__DIR__);
+// Path real de Laravel en el servidor según .cpanel.yml
+$laravelRoot = '/home/carriroa/laravel_app';
 $envPath     = $laravelRoot . '/.env';
 $action      = $_GET['action'] ?? '';
 
