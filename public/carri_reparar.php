@@ -51,6 +51,7 @@ echo "<a class='btn'        href='{$base}&action=seed'>👤 Solo Seed</a> ";
 echo "<a class='btn yellow' href='{$base}&action=insertar_usuarios'>👤 Insertar Usuarios (manual PDO)</a> ";
 echo "<a class='btn green'  href='{$base}&action=activar_usuarios'>✅ Activar Todas las Cuentas</a> ";
 echo "<a class='btn'        href='{$base}&action=ver_usuario'>📄 Ver Todos los Usuarios</a> ";
+echo "<a class='btn'        href='{$base}&action=parche_auth'>🩹 Parchear AuthService</a> ";
 echo "<a class='btn red'    href='{$base}&action=limpiar_cache'>🗑️ Limpiar Caché</a> ";
 echo "<a class='btn'        href='{$base}&action=ver_env'>📄 Ver .env</a>";
 echo "<hr>";
@@ -144,6 +145,25 @@ if ($action === 'migrar_y_seed') {
         } catch (\Exception $e) {
             echo "<p class='err'>❌ Error leyendo usuarios: " . htmlspecialchars($e->getMessage()) . "</p>";
         }
+    }
+} elseif ($action === 'parche_auth') {
+    echo "<h2>🩹 Parcheando AuthService.php</h2>";
+    $authServicePath = $laravelRoot . '/app/Domains/Auth/Services/AuthService.php';
+    if (file_exists($authServicePath)) {
+        $content = file_get_contents($authServicePath);
+        $newContent = preg_replace('/if \(!\$user-&gt;active\) \{[\s\S]*?\}\n/', '', $content);
+        if ($newContent !== null && $newContent !== $content) {
+            if (file_put_contents($authServicePath, $newContent)) {
+                echo "<p class='ok'>✔ AuthService.php parcheado correctamente (validación de active eliminada).</p>";
+            } else {
+                echo "<p class='err'>❌ Error al guardar AuthService.php.</p>";
+            }
+        } else {
+            echo "<p class='warn'>⚠️ Validación no encontrada o ya estaba eliminada en AuthService.php.</p>";
+        }
+        echo "<pre>" . htmlspecialchars($newContent) . "</pre>";
+    } else {
+        echo "<p class='err'>❌ Archivo AuthService.php no encontrado en $authServicePath.</p>";
     }
 } elseif ($action === 'insertar_usuarios') {
     echo "<h2>👤 Insertar Usuarios del Seeder (PDO directo)</h2>";
