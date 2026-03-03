@@ -68,11 +68,13 @@ echo "<hr>";
 function runArtisan(string $laravelRoot, string $command, array $args = []): string {
     ob_start();
     try {
-        // Guardar estado global
-        $_SERVER['argv']  = ['artisan', $command];
-        $_SERVER['argc']  = 2;
+        $_SERVER['argv'] = ['artisan', $command];
+        $_SERVER['argc'] = 2;
 
-        define('LARAVEL_START', microtime(true));
+        // Cargar autoloader de Composer (indispensable)
+        require_once $laravelRoot . '/vendor/autoload.php';
+
+        defined('LARAVEL_START') || define('LARAVEL_START', microtime(true));
 
         $app = require $laravelRoot . '/bootstrap/app.php';
 

@@ -23,3 +23,7 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Ruta al root de Laravel en producción (cPanel)
+# El index.php la usa para cargar vendor/autoload.php y bootstrap/app.php
+SetEnv LARAVEL_APP_PATH /home/carriroa/laravel_app
