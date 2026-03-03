@@ -12,7 +12,9 @@ return new class extends Migration {
     {
         Schema::table('clients', function (Blueprint $table) {
             // Activity Segmentation
-            $table->string('activity_category')->nullable()->after('economic_activity');
+            if (!Schema::hasColumn('clients', 'activity_category')) {
+                $table->string('activity_category')->nullable();
+            }
 
             // Fiscal Data
             $table->string('commercial_registry_number')->nullable()->after('vat_number');

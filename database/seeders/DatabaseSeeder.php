@@ -17,27 +17,27 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
         ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        $testUser = User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            ['name' => 'Test User', 'password' => bcrypt('password')]
+        );
 
-        $admin = User::factory()->create([
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
-        ]);
-        $admin->assignRole('admin');
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            ['name' => 'Admin User', 'password' => bcrypt('Admin1234!')]
+        );
+        $admin->syncRoles(['admin']);
 
-        $merchant = User::factory()->create([
-            'name' => 'Merchant User',
-            'email' => 'merchant@example.com',
-        ]);
-        $merchant->assignRole('merchant');
+        $merchant = User::firstOrCreate(
+            ['email' => 'merchant@example.com'],
+            ['name' => 'Merchant User', 'password' => bcrypt('Merchant1234!')]
+        );
+        $merchant->syncRoles(['merchant']);
 
-        $driver = User::factory()->create([
-            'name' => 'Driver User',
-            'email' => 'driver@example.com',
-        ]);
-        $driver->assignRole('delivery');
+        $driver = User::firstOrCreate(
+            ['email' => 'driver@example.com'],
+            ['name' => 'Driver User', 'password' => bcrypt('Driver1234!')]
+        );
+        $driver->syncRoles(['delivery']);
     }
 }
