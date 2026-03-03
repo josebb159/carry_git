@@ -50,6 +50,7 @@ echo "<a class='btn'        href='{$base}&action=migrar'>📦 Solo Migrar</a> ";
 echo "<a class='btn'        href='{$base}&action=seed'>👤 Solo Seed</a> ";
 echo "<a class='btn yellow' href='{$base}&action=insertar_usuarios'>👤 Insertar Usuarios (manual PDO)</a> ";
 echo "<a class='btn green'  href='{$base}&action=activar_usuarios'>✅ Activar Todas las Cuentas</a> ";
+echo "<a class='btn'        href='{$base}&action=ver_usuario'>📄 Ver Usuario Delivery</a> ";
 echo "<a class='btn red'    href='{$base}&action=limpiar_cache'>🗑️ Limpiar Caché</a> ";
 echo "<a class='btn'        href='{$base}&action=ver_env'>📄 Ver .env</a>";
 echo "<hr>";
@@ -131,9 +132,21 @@ if ($action === 'migrar_y_seed') {
             echo "<p class='err'>❌ Error actualizando usuarios: " . htmlspecialchars($e->getMessage()) . "</p>";
         }
     }
+} elseif ($action === 'ver_usuario') {
+    echo "<h2>📄 Ver Usuario Delivery</h2>";
+    $pdo = getDB($envPath);
+    if ($pdo) {
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE email = 'delivery@carri.com' LIMIT 1");
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            echo "<pre>" . htmlspecialchars(print_r($user, true)) . "</pre>";
+        } catch (\Exception $e) {
+            echo "<p class='err'>❌ Error leyendo usuario: " . htmlspecialchars($e->getMessage()) . "</p>";
+        }
+    }
 } elseif ($action === 'insertar_usuarios') {
     echo "<h2>👤 Insertar Usuarios del Seeder (PDO directo)</h2>";
-    // omitiendo el contenido muy largo ya que migrate_y_seed funcionó bien
     echo "<p class='err'>Usa la opción Migrar + Seed en su lugar.</p>";
 } elseif ($action === 'limpiar_cache') {
     echo "<h2>🗑️ Limpiando Caché de Laravel</h2>";
