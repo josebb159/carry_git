@@ -17,53 +17,119 @@ return new class extends Migration {
             }
 
             // Fiscal Data
-            $table->string('commercial_registry_number')->nullable()->after('vat_number');
-            $table->string('address')->nullable()->after('commercial_registry_number');
-            $table->string('city', 100)->nullable()->after('address');
-            $table->string('state', 100)->nullable()->after('city');
-            $table->string('zip_code', 20)->nullable()->after('state');
+            if (!Schema::hasColumn('clients', 'commercial_registry_number')) {
+                $table->string('commercial_registry_number')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'address')) {
+                $table->string('address')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'city')) {
+                $table->string('city', 100)->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'state')) {
+                $table->string('state', 100)->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'zip_code')) {
+                $table->string('zip_code', 20)->nullable();
+            }
 
             // Correspondence Address
-            $table->string('shipping_address')->nullable();
-            $table->string('shipping_city', 100)->nullable();
-            $table->string('shipping_country')->nullable();
-            $table->string('shipping_zip_code', 20)->nullable();
-            $table->string('shipping_email')->nullable();
+            if (!Schema::hasColumn('clients', 'shipping_address')) {
+                $table->string('shipping_address')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'shipping_city')) {
+                $table->string('shipping_city', 100)->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'shipping_country')) {
+                $table->string('shipping_country')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'shipping_zip_code')) {
+                $table->string('shipping_zip_code', 20)->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'shipping_email')) {
+                $table->string('shipping_email')->nullable();
+            }
 
             // Contact Management - Billing
-            $table->string('billing_contact_name')->nullable();
-            $table->string('billing_contact_phone')->nullable();
-            $table->string('billing_contact_email')->nullable();
+            if (!Schema::hasColumn('clients', 'billing_contact_name')) {
+                $table->string('billing_contact_name')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'billing_contact_phone')) {
+                $table->string('billing_contact_phone')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'billing_contact_email')) {
+                $table->string('billing_contact_email')->nullable();
+            }
 
             // Contact Management - Logistics
-            $table->string('logistics_contact_name')->nullable();
-            $table->string('logistics_contact_role')->nullable();
-            $table->string('logistics_contact_phone')->nullable();
-            $table->string('logistics_contact_email')->nullable();
+            if (!Schema::hasColumn('clients', 'logistics_contact_name')) {
+                $table->string('logistics_contact_name')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'logistics_contact_role')) {
+                $table->string('logistics_contact_role')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'logistics_contact_phone')) {
+                $table->string('logistics_contact_phone')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'logistics_contact_email')) {
+                $table->string('logistics_contact_email')->nullable();
+            }
 
             // Contact Management - Emergencies
-            $table->string('emergency_contact_name')->nullable();
-            $table->string('emergency_contact_phone')->nullable();
-            $table->string('emergency_contact_email')->nullable();
+            if (!Schema::hasColumn('clients', 'emergency_contact_name')) {
+                $table->string('emergency_contact_name')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'emergency_contact_phone')) {
+                $table->string('emergency_contact_phone')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'emergency_contact_email')) {
+                $table->string('emergency_contact_email')->nullable();
+            }
 
             // Billing Procedure
-            $table->string('billing_procedure')->nullable(); // Factura por viaje, Autofacturación, Otros
+            if (!Schema::hasColumn('clients', 'billing_procedure')) {
+                $table->string('billing_procedure')->nullable(); // Factura por viaje, Autofacturación, Otros
+            }
 
             // Document Management
-            $table->boolean('doc_invoice_email')->default(false);
-            $table->boolean('doc_invoice_postal')->default(false);
-            $table->boolean('doc_cmr_email')->default(false);
-            $table->boolean('doc_cmr_postal')->default(false);
-            $table->boolean('doc_delivery_note_email')->default(false);
-            $table->boolean('doc_delivery_note_postal')->default(false);
-            $table->boolean('doc_temp_report_email')->default(false);
-            $table->boolean('doc_temp_report_postal')->default(false);
+            if (!Schema::hasColumn('clients', 'doc_invoice_email')) {
+                $table->boolean('doc_invoice_email')->default(false);
+            }
+            if (!Schema::hasColumn('clients', 'doc_invoice_postal')) {
+                $table->boolean('doc_invoice_postal')->default(false);
+            }
+            if (!Schema::hasColumn('clients', 'doc_cmr_email')) {
+                $table->boolean('doc_cmr_email')->default(false);
+            }
+            if (!Schema::hasColumn('clients', 'doc_cmr_postal')) {
+                $table->boolean('doc_cmr_postal')->default(false);
+            }
+            if (!Schema::hasColumn('clients', 'doc_delivery_note_email')) {
+                $table->boolean('doc_delivery_note_email')->default(false);
+            }
+            if (!Schema::hasColumn('clients', 'doc_delivery_note_postal')) {
+                $table->boolean('doc_delivery_note_postal')->default(false);
+            }
+            if (!Schema::hasColumn('clients', 'doc_temp_report_email')) {
+                $table->boolean('doc_temp_report_email')->default(false);
+            }
+            if (!Schema::hasColumn('clients', 'doc_temp_report_postal')) {
+                $table->boolean('doc_temp_report_postal')->default(false);
+            }
 
             // Signature
-            $table->string('filled_by_name')->nullable();
-            $table->string('filled_by_role')->nullable();
-            $table->string('filled_by_phone')->nullable();
-            $table->date('filled_by_date')->nullable();
+            if (!Schema::hasColumn('clients', 'filled_by_name')) {
+                $table->string('filled_by_name')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'filled_by_role')) {
+                $table->string('filled_by_role')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'filled_by_phone')) {
+                $table->string('filled_by_phone')->nullable();
+            }
+            if (!Schema::hasColumn('clients', 'filled_by_date')) {
+                $table->date('filled_by_date')->nullable();
+            }
         });
     }
 
