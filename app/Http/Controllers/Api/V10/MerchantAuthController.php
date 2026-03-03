@@ -33,10 +33,7 @@ class MerchantAuthController extends Controller
 
         $user = User::where('email', $request->email)->firstOrFail();
 
-        // Only merchants (and admins) can log in through this endpoint
-        if (!$user->hasRole('merchant') && !$user->hasRole('admin')) {
-            return $this->errorResponse('Unauthorized. Merchant access required.', 403);
-        }
+
 
         // Revoke previous tokens to keep sessions clean (optional)
         // $user->tokens()->delete();
