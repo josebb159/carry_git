@@ -19,11 +19,7 @@ class AuthService
             ]);
         }
 
-        if (!$user->active) {
-            throw ValidationException::withMessages([
-                'email' => ['Your account is inactive.'],
-            ]);
-        }
+
 
         // Validación de 'Login por Conexión' para Transportistas (App Móvil)
         if ($user->hasRole('delivery')) {
