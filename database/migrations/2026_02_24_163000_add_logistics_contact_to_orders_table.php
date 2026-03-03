@@ -9,15 +9,25 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->string('logistics_contact_name')->nullable()->after('user_id');
-            $table->string('logistics_contact_email')->nullable()->after('logistics_contact_name');
+            if (!Schema::hasColumn('orders', 'logistics_contact_name')) {
+                $table->string('logistics_contact_name')->nullable();
+            }
+            if (!Schema::hasColumn('orders', 'logistics_contact_email')) {
+                $table->string('logistics_contact_email')->nullable();
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->dropColumn(['logistics_contact_name', 'logistics_contact_email']);
+            $colsToDrop = [];
+            if (Schema::hasColumn('orders', 'logistics_contact_name')) $colsToDrop[] = 'logistics_contact_name';
+            if (Schema::hasColumn('orders', 'logistics_contact_email')) $colsToDrop[] = 'logistics_contact_email';
+            
+            if (!empty($colsToDrop)) {
+                $table->dropColumn($colsToDrop);
+            }
         });
     }
 };
