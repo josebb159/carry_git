@@ -26,8 +26,19 @@ class FleetController extends Controller
 
     public function store(StoreFleetRequest $request): RedirectResponse
     {
-        Fleet::create($request->validated());
+        $validated = $request->validated();
 
-        return redirect()->route('fleet.index')->with('success', 'Vehicle added successfully.');
+        // Handle booleans from checkboxes
+        $validated['adr_enabled'] = $request->boolean('adr_enabled');
+        $validated['pallet_exchange'] = $request->boolean('pallet_exchange');
+        $validated['gps_tracking'] = $request->boolean('gps_tracking');
+        $validated['subcontractors_trucks'] = $request->boolean('subcontractors_trucks');
+        $validated['double_driver'] = $request->boolean('double_driver');
+        $validated['multimodal_solutions'] = $request->boolean('multimodal_solutions');
+        $validated['partial_loads'] = $request->boolean('partial_loads');
+
+        Fleet::create($validated);
+
+        return redirect()->route('fleet.index')->with('success', 'Flota registrada correctamente.');
     }
 }
