@@ -2,7 +2,7 @@
     class="fixed inset-y-0 left-0 z-50 w-64 bg-black border-r border-gray-800 text-white transition-transform duration-300 transform md:translate-x-0"
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" @click.away="sidebarOpen = false">
     <div class="flex items-center justify-center h-16 bg-black border-b border-gray-800">
-        <h1 class="text-xl font-bold tracking-wider uppercase text-lime-brand">Carri Logistics</h1>
+        <img src="{{ asset('images/Asset1.png') }}" alt="Carri Logistics" class="h-10 w-auto object-contain">
     </div>
 
     <nav class="mt-5 px-4 space-y-2">

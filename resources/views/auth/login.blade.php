@@ -145,10 +145,9 @@
 
     <div class="glass-card">
         <div class="text-center mb-10">
-            <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-black border border-white/10 shadow-xl mb-4">
-                <span class="text-lime-brand text-3xl font-black italic tracking-tighter">C</span>
+            <div class="flex items-center justify-center mb-4">
+                <img src="{{ asset('images/Asset1.png') }}" alt="Carri Logistics" class="h-16 w-auto object-contain">
             </div>
-            <h2 class="text-white text-xl font-bold tracking-tight">Carri Logistics</h2>
             <p class="text-gray-500 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Acceso Seguro</p>
         </div>
 
