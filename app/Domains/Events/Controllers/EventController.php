@@ -15,13 +15,8 @@ class EventController extends Controller
 {
     use ApiResponse;
 
-    /**
-     * Store a new event for an order, including optional proof of delivery (image).
-     */
-    public function store(Request $request, string $orderUuid): JsonResponse
+    public function store(Request $request, int $orderId): JsonResponse
     {
-        $order = Order::where('uuid', $orderUuid)->firstOrFail();
-
         $validated = $request->validate([
             'type' => 'required|string',
             'description' => 'required|string',
@@ -36,20 +31,46 @@ class EventController extends Controller
             $proofUrl = Storage::disk('public')->url($path);
         }
 
+        if ($orderId >= 1000000) {
+            $parcelId = $orderId - 1000000;
+            $parcel = \App\Domains\Merchant\Models\Parcel::findOrFail($parcelId);
+
+            $parcelStatusMap = [
+                'IN_TRANSIT' => 'in_transit',
+                'DELIVERED' => 'delivered',
+            ];
+            $newStatus = $parcelStatusMap[$validated['type']] ?? 'processing';
+
+            $parcel->update(['status' => $newStatus]);
+            $parcel->appendLog($newStatus, $validated['description']);
+
+            return response()->json(['message' => 'Event created successfully'], 201);
+        }
+
+        $order = Order::findOrFail($orderId);
+
+        $backendType = match ($validated['type']) {
+            'IN_TRANSIT' => 'departed',
+            'DELIVERED' => 'unloaded',
+            default => 'incident'
+        };
+
         $event = Event::create([
             'uuid' => (string)Str::uuid(),
             'order_id' => $order->id,
             'user_id' => $request->user()->id,
-            'type' => $validated['type'],
+            'type' => $backendType,
             'description' => $validated['description'],
-            'location' => $validated['location'],
-            'meta_data' => $validated['meta_data'],
+            'location' => $validated['location'] ?? [],
+            'meta_data' => $validated['meta_data'] ?? [],
             'proof_url' => $proofUrl,
         ]);
 
         // Update order status if applicable
-        if ($validated['type'] === 'unloaded') {
+        if ($backendType === 'unloaded') {
             $order->update(['status' => 'delivered']);
+        } else if ($backendType === 'departed') {
+            $order->update(['status' => 'in_transit']);
         }
 
         return $this->successResponse($event, 'Event created successfully', 201);
@@ -58,9 +79,29 @@ class EventController extends Controller
     /**
      * List events for a specific order.
      */
-    public function index(string $orderUuid): JsonResponse
+    public function index(int $orderId): JsonResponse
     {
-        $order = Order::where('uuid', $orderUuid)->firstOrFail();
+        if ($orderId >= 1000000) {
+            $parcelId = $orderId - 1000000;
+            $parcel = \App\Domains\Merchant\Models\Parcel::findOrFail($parcelId);
+            $logs = $parcel->logs ?? [];
+            
+            $events = array_map(function($log) {
+               return [
+                   'type' => $log['status'] ?? 'processing',
+                   'description' => $log['note'] ?? 'Status update',
+                   'created_at' => $log['time'] ?? now()->toIso8601String(),
+                   'user' => ['name' => 'Merchant/System']
+               ];
+            }, $logs);
+            
+            // reverse to match descending order
+            $events = array_reverse($events);
+
+            return response()->json(['data' => $events, 'message' => 'Order events retrieved', 'success' => true]);
+        }
+
+        $order = Order::findOrFail($orderId);
         $events = $order->events()->with('user:id,name')->orderBy('created_at', 'desc')->get();
 
         return $this->successResponse($events, 'Order events retrieved');

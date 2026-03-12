@@ -27,76 +27,117 @@ class OrderController extends Controller
         return $this->successResponse($order, 'Order created successfully', 201);
     }
 
-    // Placeholder for index, show, etc.
     public function index()
     {
+        $orders = \App\Domains\Orders\Models\Order::with(['client', 'locations'])->get()->map(function($order) {
+            $origin = $order->locations->where('type', 'pickup')->first();
+            $destination = $order->locations->where('type', 'delivery')->first();
+            return [
+                'id' => $order->id,
+                'orderNumber' => $order->order_number,
+                'status' => $order->status->value ?? 'PENDING',
+                'clientName' => $order->client->name ?? 'Unknown',
+                'originCity' => $origin?->city ?? 'Unknown',
+                'destinationCity' => $destination?->city ?? 'Unknown',
+                'originAddress' => $origin?->address ?? 'Unknown',
+                'destinationAddress' => $destination?->address ?? 'Unknown',
+                'pickupDate' => $origin?->scheduled_at ? \Carbon\Carbon::parse($origin->scheduled_at)->toIso8601String() : now()->toIso8601String(),
+                'deliveryDate' => $destination?->scheduled_at ? \Carbon\Carbon::parse($destination->scheduled_at)->toIso8601String() : now()->addDays(1)->toIso8601String(),
+                'temperatureRequirements' => $order->temperature,
+                'pallets' => 1,
+                'price' => (float) $order->total_amount,
+            ];
+        });
+
+        $parcels = \App\Domains\Merchant\Models\Parcel::with(['shop', 'user'])->get()->map(function($parcel) {
+            // Map parcel status to equivalent order status
+            $statusMap = [
+                'pending' => 'PENDING',
+                'processing' => 'PENDING',
+                'picked_up' => 'IN_TRANSIT',
+                'in_transit' => 'IN_TRANSIT',
+                'delivered' => 'DELIVERED',
+                'returned' => 'INCIDENT',
+                'cancelled' => 'CANCELLED',
+            ];
+            
+            return [
+                'id' => 1000000 + $parcel->id, // Offset to avoid ID collision with Orders
+                'orderNumber' => $parcel->tracking_code,
+                'status' => $statusMap[$parcel->status] ?? 'PENDING',
+                'clientName' => $parcel->shop->name ?? $parcel->user->name ?? 'Merchant',
+                'originCity' => 'Local Shop',
+                'destinationCity' => 'Local Dest',
+                'originAddress' => $parcel->shop->address ?? 'Shop Location',
+                'destinationAddress' => $parcel->recipient_address ?? 'Dest Location',
+                'pickupDate' => $parcel->created_at ? $parcel->created_at->toIso8601String() : now()->toIso8601String(),
+                'deliveryDate' => $parcel->created_at ? $parcel->created_at->addDays(1)->toIso8601String() : now()->addDays(1)->toIso8601String(),
+                'temperatureRequirements' => null,
+                'pallets' => 1,
+                'price' => (float) ($parcel->cod_amount ?? $parcel->delivery_charge ?? 0),
+            ];
+        });
+
         return response()->json([
-            'data' => [
-                [
-                    'id' => 1,
-                    'orderNumber' => 'ORD-001',
-                    'status' => 'ASSIGNED',
-                    'clientName' => 'Amazon Inc.',
-                    'originCity' => 'New York',
-                    'destinationCity' => 'Boston',
-                    'originAddress' => '123 Warehouse Blvd, NY',
-                    'destinationAddress' => '456 Distribution Dr, MA',
-                    'pickupDate' => now()->addDays(1)->toIso8601String(),
-                    'deliveryDate' => now()->addDays(2)->toIso8601String(),
-                    'temperatureRequirements' => 'keep_frozen',
-                    'pallets' => 5,
-                    'price' => 150.00,
-                ],
-                [
-                    'id' => 2,
-                    'orderNumber' => 'ORD-002',
-                    'status' => 'IN_TRANSIT',
-                    'clientName' => 'Walmart',
-                    'originCity' => 'Chicago',
-                    'destinationCity' => 'Detroit',
-                    'originAddress' => '789 Supply St, IL',
-                    'destinationAddress' => '101 Store Ln, MI',
-                    'pickupDate' => now()->subDays(1)->toIso8601String(),
-                    'deliveryDate' => now()->addDays(1)->toIso8601String(),
-                    'temperatureRequirements' => null,
-                    'pallets' => 12,
-                    'price' => 300.50,
-                ],
-                [
-                    'id' => 3,
-                    'orderNumber' => 'ORD-003',
-                    'status' => 'DELIVERED',
-                    'clientName' => 'Target',
-                    'originCity' => 'Los Angeles',
-                    'destinationCity' => 'San Diego',
-                    'originAddress' => '222 Sunset Blvd, CA',
-                    'destinationAddress' => '333 Ocean Dr, CA',
-                    'pickupDate' => now()->subDays(2)->toIso8601String(),
-                    'deliveryDate' => now()->subDays(1)->toIso8601String(),
-                    'temperatureRequirements' => 'keep_dry',
-                    'pallets' => 2,
-                    'price' => 120.00,
-                ],
-            ]
+            'data' => $orders->concat($parcels)->values()
         ]);
     }
 
     public function show($id)
     {
+        if ($id >= 1000000) {
+            $parcelId = $id - 1000000;
+            $parcel = \App\Domains\Merchant\Models\Parcel::with(['shop', 'user'])->find($parcelId);
+            if (!$parcel) return response()->json(['message' => 'Not found'], 404);
+
+            $statusMap = [
+                'pending' => 'PENDING',
+                'processing' => 'PENDING',
+                'picked_up' => 'IN_TRANSIT',
+                'in_transit' => 'IN_TRANSIT',
+                'delivered' => 'DELIVERED',
+                'returned' => 'INCIDENT',
+                'cancelled' => 'CANCELLED',
+            ];
+
+            return response()->json([
+                'id' => 1000000 + $parcel->id,
+                'orderNumber' => $parcel->tracking_code,
+                'status' => $statusMap[$parcel->status] ?? 'PENDING',
+                'clientName' => $parcel->shop->name ?? $parcel->user->name ?? 'Merchant',
+                'originCity' => 'Local Shop',
+                'destinationCity' => 'Local Dest',
+                'originAddress' => $parcel->shop->address ?? 'Shop Location',
+                'destinationAddress' => $parcel->recipient_address ?? 'Dest Location',
+                'pickupDate' => $parcel->created_at ? $parcel->created_at->toIso8601String() : now()->toIso8601String(),
+                'deliveryDate' => $parcel->created_at ? $parcel->created_at->addDays(1)->toIso8601String() : now()->addDays(1)->toIso8601String(),
+                'temperatureRequirements' => null,
+                'pallets' => 1,
+                'price' => (float) ($parcel->cod_amount ?? $parcel->delivery_charge ?? 0),
+            ]);
+        }
+
+        $order = \App\Domains\Orders\Models\Order::with(['client', 'locations'])->find($id);
+        if (!$order) {
+            return response()->json(['message' => 'Not found'], 404);
+        }
+        $origin = $order->locations->where('type', 'pickup')->first();
+        $destination = $order->locations->where('type', 'delivery')->first();
+        
         return response()->json([
-            'id' => (int) $id,
-            'orderNumber' => 'ORD-00' . $id,
-            'status' => $id == 1 ? 'ASSIGNED' : ($id == 2 ? 'IN_TRANSIT' : 'DELIVERED'),
-            'clientName' => $id == 1 ? 'Amazon Inc.' : ($id == 2 ? 'Walmart' : 'Target'),
-            'originCity' => $id == 1 ? 'New York' : ($id == 2 ? 'Chicago' : 'Los Angeles'),
-            'destinationCity' => $id == 1 ? 'Boston' : ($id == 2 ? 'Detroit' : 'San Diego'),
-            'originAddress' => $id == 1 ? '123 Warehouse Blvd, NY' : ($id == 2 ? '789 Supply St, IL' : '222 Sunset Blvd, CA'),
-            'destinationAddress' => $id == 1 ? '456 Distribution Dr, MA' : ($id == 2 ? '101 Store Ln, MI' : '333 Ocean Dr, CA'),
-            'pickupDate' => $id == 1 ? now()->addDays(1)->toIso8601String() : now()->subDays(1)->toIso8601String(),
-            'deliveryDate' => $id == 1 ? now()->addDays(2)->toIso8601String() : now()->addDays(1)->toIso8601String(),
-            'temperatureRequirements' => $id == 1 ? 'keep_frozen' : ($id == 3 ? 'keep_dry' : null),
-            'pallets' => $id * 2,
-            'price' => 100.00 + ($id * 10),
+            'id' => $order->id,
+            'orderNumber' => $order->order_number,
+            'status' => $order->status->value ?? 'PENDING',
+            'clientName' => $order->client->name ?? 'Unknown',
+            'originCity' => $origin?->city ?? 'Unknown',
+            'destinationCity' => $destination?->city ?? 'Unknown',
+            'originAddress' => $origin?->address ?? 'Unknown',
+            'destinationAddress' => $destination?->address ?? 'Unknown',
+            'pickupDate' => $origin?->scheduled_at ? \Carbon\Carbon::parse($origin->scheduled_at)->toIso8601String() : now()->toIso8601String(),
+            'deliveryDate' => $destination?->scheduled_at ? \Carbon\Carbon::parse($destination->scheduled_at)->toIso8601String() : now()->addDays(1)->toIso8601String(),
+            'temperatureRequirements' => $order->temperature,
+            'pallets' => 1,
+            'price' => (float) $order->total_amount,
         ]);
     }
 }

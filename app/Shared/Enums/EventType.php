@@ -11,4 +11,5 @@ enum EventType: string
     case ARRIVED_UNLOAD = 'arrived_unload';
     case UNLOADED = 'unloaded';
     case INCIDENT = 'incident';
+    case REQUEST_CREATED = 'request_created';
 }
