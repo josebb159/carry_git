@@ -10,6 +10,7 @@ class Fleet extends Model
     use HasFactory;
     protected $fillable = [
         'carrier_id',
+        'plate',
         'truck_type',
         'refrigeration_type',
         'capacity_cbm',
