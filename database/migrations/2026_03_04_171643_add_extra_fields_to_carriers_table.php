@@ -13,44 +13,44 @@ return new class extends Migration
     {
         Schema::table('carriers', function (Blueprint $table) {
             // 1. Datos de Identificación y Legales
-            $table->string('company_registration_number')->nullable();
-            $table->string('website')->nullable();
-            $table->text('full_address')->nullable();
+            if (!Schema::hasColumn('carriers', 'company_registration_number')) $table->string('company_registration_number')->nullable();
+            if (!Schema::hasColumn('carriers', 'website')) $table->string('website')->nullable();
+            if (!Schema::hasColumn('carriers', 'full_address')) $table->text('full_address')->nullable();
 
             // 2. Documentación Requerida
-            $table->string('doc_company_registration')->nullable();
-            $table->string('doc_cmr_insurance')->nullable();
-            $table->string('doc_transport_license')->nullable();
-            $table->string('doc_bank_certificate')->nullable();
-            $table->string('doc_tax_residence')->nullable();
+            if (!Schema::hasColumn('carriers', 'doc_company_registration')) $table->string('doc_company_registration')->nullable();
+            if (!Schema::hasColumn('carriers', 'doc_cmr_insurance')) $table->string('doc_cmr_insurance')->nullable();
+            if (!Schema::hasColumn('carriers', 'doc_transport_license')) $table->string('doc_transport_license')->nullable();
+            if (!Schema::hasColumn('carriers', 'doc_bank_certificate')) $table->string('doc_bank_certificate')->nullable();
+            if (!Schema::hasColumn('carriers', 'doc_tax_residence')) $table->string('doc_tax_residence')->nullable();
 
             // 3. Información Operativa y de Flota
-            $table->integer('fleet_tauliner_count')->default(0);
-            $table->integer('fleet_mega_count')->default(0);
-            $table->integer('fleet_frigo_count')->default(0);
-            $table->integer('fleet_double_deck_count')->default(0);
-            $table->string('adr_classes')->nullable();
-            $table->boolean('xl_certification')->default(false);
+            if (!Schema::hasColumn('carriers', 'fleet_tauliner_count')) $table->integer('fleet_tauliner_count')->default(0);
+            if (!Schema::hasColumn('carriers', 'fleet_mega_count')) $table->integer('fleet_mega_count')->default(0);
+            if (!Schema::hasColumn('carriers', 'fleet_frigo_count')) $table->integer('fleet_frigo_count')->default(0);
+            if (!Schema::hasColumn('carriers', 'fleet_double_deck_count')) $table->integer('fleet_double_deck_count')->default(0);
+            if (!Schema::hasColumn('carriers', 'adr_classes')) $table->string('adr_classes')->nullable();
+            if (!Schema::hasColumn('carriers', 'xl_certification')) $table->boolean('xl_certification')->default(false);
 
             // 4. Departamentos de Contacto
-            $table->string('contact_traffic_email')->nullable();
-            $table->string('contact_traffic_phone')->nullable();
-            $table->string('contact_admin_email')->nullable();
-            $table->string('contact_admin_phone')->nullable();
-            $table->string('contact_sales_email')->nullable();
-            $table->string('contact_sales_phone')->nullable();
+            if (!Schema::hasColumn('carriers', 'contact_traffic_email')) $table->string('contact_traffic_email')->nullable();
+            if (!Schema::hasColumn('carriers', 'contact_traffic_phone')) $table->string('contact_traffic_phone')->nullable();
+            if (!Schema::hasColumn('carriers', 'contact_admin_email')) $table->string('contact_admin_email')->nullable();
+            if (!Schema::hasColumn('carriers', 'contact_admin_phone')) $table->string('contact_admin_phone')->nullable();
+            if (!Schema::hasColumn('carriers', 'contact_sales_email')) $table->string('contact_sales_email')->nullable();
+            if (!Schema::hasColumn('carriers', 'contact_sales_phone')) $table->string('contact_sales_phone')->nullable();
 
             // 5. Destinos Preferidos (Cargas FTL)
-            $table->json('preferred_destinations')->nullable();
+            if (!Schema::hasColumn('carriers', 'preferred_destinations')) $table->json('preferred_destinations')->nullable();
 
             // 6. Datos Bancarios
-            $table->string('bank_name')->nullable();
-            $table->text('bank_address')->nullable();
-            $table->string('bank_iban')->nullable();
-            $table->string('bank_swift')->nullable();
+            if (!Schema::hasColumn('carriers', 'bank_name')) $table->string('bank_name')->nullable();
+            if (!Schema::hasColumn('carriers', 'bank_address')) $table->text('bank_address')->nullable();
+            if (!Schema::hasColumn('carriers', 'bank_iban')) $table->string('bank_iban')->nullable();
+            if (!Schema::hasColumn('carriers', 'bank_swift')) $table->string('bank_swift')->nullable();
 
             // 7. Condiciones de Pago
-            $table->boolean('accept_e_invoicing')->default(false);
+            if (!Schema::hasColumn('carriers', 'accept_e_invoicing')) $table->boolean('accept_e_invoicing')->default(false);
         });
     }
 
