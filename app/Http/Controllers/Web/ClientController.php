@@ -30,7 +30,11 @@ class ClientController extends Controller
 
     public function store(\App\Domains\Clients\Http\Requests\CreateClientRequest $request): \Illuminate\Http\RedirectResponse
     {
-        Client::create($request->validated());
+        $data = $request->validated();
+        // Compatibilidad con la tabla legacy del servidor
+        $data['name'] = $data['legal_name'] ?? 'Desconocido';
+
+        Client::create($data);
 
         return redirect()->route('clients.index')->with('success', 'Client created successfully.');
     }
