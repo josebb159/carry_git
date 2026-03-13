@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('clients', function (Blueprint $table) {
             // Verificar si la columna no existe antes de agregarla para evitar errores
             if (!Schema::hasColumn('clients', 'vat_number')) {
-                $table->string('vat_number')->unique()->after('legal_name')->nullable();
+                $table->string('vat_number')->unique()->nullable();
             }
         });
     }
