@@ -29,6 +29,29 @@ Route::get('/_run_migrations_temp_654321', function () {
     }
 });
 
+Route::get('/deploy-server', function () {
+    try {
+        $output = [];
+        
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        $output[] = 'Migraciones: ' . \Illuminate\Support\Facades\Artisan::output();
+
+        \Illuminate\Support\Facades\Artisan::call('optimize:clear');
+        $output[] = 'Caché limpiada: ' . \Illuminate\Support\Facades\Artisan::output();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Despliegue ejecutado correctamente (Migraciones + Caché).',
+            'details' => $output
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Error durante el despliegue: ' . $e->getMessage()
+        ], 500);
+    }
+});
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class , 'index'])->name('dashboard');
