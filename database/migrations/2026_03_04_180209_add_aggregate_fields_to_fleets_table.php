@@ -13,26 +13,26 @@ return new class extends Migration
     {
         Schema::table('fleets', function (Blueprint $table) {
             // Datos de la Flota Propia
-            $table->integer('total_owned_trucks')->default(0);
-            $table->integer('three_axle_trucks')->default(0);
-            $table->integer('tauliner_trucks')->default(0);
-            $table->integer('container_chassis')->default(0);
-            $table->integer('mega_trailers')->default(0);
-            $table->integer('frigo_trucks')->default(0);
-            $table->integer('frigo_bitemp_trucks')->default(0);
-            $table->integer('double_deck_trucks')->default(0);
+            if (!Schema::hasColumn('fleets', 'total_owned_trucks')) $table->integer('total_owned_trucks')->default(0);
+            if (!Schema::hasColumn('fleets', 'three_axle_trucks')) $table->integer('three_axle_trucks')->default(0);
+            if (!Schema::hasColumn('fleets', 'tauliner_trucks')) $table->integer('tauliner_trucks')->default(0);
+            if (!Schema::hasColumn('fleets', 'container_chassis')) $table->integer('container_chassis')->default(0);
+            if (!Schema::hasColumn('fleets', 'mega_trailers')) $table->integer('mega_trailers')->default(0);
+            if (!Schema::hasColumn('fleets', 'frigo_trucks')) $table->integer('frigo_trucks')->default(0);
+            if (!Schema::hasColumn('fleets', 'frigo_bitemp_trucks')) $table->integer('frigo_bitemp_trucks')->default(0);
+            if (!Schema::hasColumn('fleets', 'double_deck_trucks')) $table->integer('double_deck_trucks')->default(0);
 
             // Destinos Preferidos (Cargas Completas - FTL)
-            $table->json('preferred_destinations')->nullable();
+            if (!Schema::hasColumn('fleets', 'preferred_destinations')) $table->json('preferred_destinations')->nullable();
 
             // Opciones Operativas Adicionales
-            $table->boolean('adr_enabled')->default(false);
-            $table->string('adr_classes')->nullable();
-            $table->boolean('pallet_exchange')->default(false);
-            $table->boolean('gps_tracking')->default(false);
-            $table->boolean('subcontractors_trucks')->default(false);
-            $table->boolean('multimodal_solutions')->default(false);
-            $table->boolean('partial_loads')->default(false);
+            if (!Schema::hasColumn('fleets', 'adr_enabled')) $table->boolean('adr_enabled')->default(false);
+            if (!Schema::hasColumn('fleets', 'adr_classes')) $table->string('adr_classes')->nullable();
+            if (!Schema::hasColumn('fleets', 'pallet_exchange')) $table->boolean('pallet_exchange')->default(false);
+            if (!Schema::hasColumn('fleets', 'gps_tracking')) $table->boolean('gps_tracking')->default(false);
+            if (!Schema::hasColumn('fleets', 'subcontractors_trucks')) $table->boolean('subcontractors_trucks')->default(false);
+            if (!Schema::hasColumn('fleets', 'multimodal_solutions')) $table->boolean('multimodal_solutions')->default(false);
+            if (!Schema::hasColumn('fleets', 'partial_loads')) $table->boolean('partial_loads')->default(false);
         });
     }
 
