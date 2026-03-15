@@ -114,16 +114,7 @@
                 </span>
             </div>
             
-            <div id="googleMap" class="h-[600px] w-full bg-[#121212]">
-                @if(empty($stats['in_transit_tracking']))
-                    <div class="h-full w-full flex flex-col items-center justify-center text-gray-600 space-y-4">
-                        <svg class="w-16 h-16 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A2 2 0 013 15.487V4.512a2 2 0 011.053-1.789L9 0l6 3 5.447-2.724A2 2 0 0121 2.053v10.975a2 2 0 01-1.053 1.789L15 24l-6-4z"></path>
-                        </svg>
-                        <p class="text-xl font-medium">Sin vehículos en ruta actualmente</p>
-                    </div>
-                @endif
-            </div>
+            <div id="googleMap" class="h-[600px] w-full bg-[#121212]"></div>
 
             @if(!empty($stats['in_transit_tracking']))
             <div class="absolute bottom-6 left-6 right-6 flex gap-4 overflow-x-auto pb-4 scrollbar-hide z-10">
@@ -246,7 +237,6 @@
         </div>
     </div>
 
-    @if(!empty($stats['in_transit_tracking']))
     <script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_api_key') }}&callback=initMap" async defer></script>
     <script>
         let map;
@@ -336,5 +326,4 @@
             }
         };
     </script>
-    @endif
 </x-app-layout>
