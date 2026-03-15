@@ -52,6 +52,24 @@ Route::get('/deploy-server', function () {
     }
 });
 
+Route::get('/clear-cache', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Caché limpiada correctamente. Ya puedes recargar el dashboard.'
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Error al limpiar caché: ' . $e->getMessage()
+        ], 500);
+    }
+});
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class , 'index'])->name('dashboard');
